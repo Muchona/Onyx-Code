@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -15,6 +15,7 @@ export default function App() {
   const processRef = useRef<HTMLDivElement>(null);
   const portfolioRef = useRef<HTMLDivElement>(null);
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -75,41 +76,6 @@ export default function App() {
             ease: "power2.out"
           }, "-=1");
 
-      // 2. Process Cards Stagger - DISABLED per Chairman request
-      // gsap.fromTo(".process-card",
-      //   { y: 50, opacity: 0 },
-      //   {
-      //     scrollTrigger: {
-      //       trigger: processRef.current,
-      //       start: "top 85%", // Trigger slightly earlier
-      //     },
-      //     y: 0,
-      //     opacity: 1,
-      //     duration: 1,
-      //     stagger: 0.2,
-      //     ease: "power3.out",
-      //     clearProps: "transform,opacity" // Ensure cleanup after animation
-      //   }
-      // );
-
-      // 3. Project Cards Stagger
-      // 3. Project Cards Stagger - DISABLED (Fixing Visibility Bug)
-      // gsap.fromTo(".project-card",
-      //   { y: 60, opacity: 0 },
-      //   {
-      //     scrollTrigger: {
-      //       trigger: portfolioRef.current,
-      //       start: "top 80%",
-      //     },
-      //     y: 0,
-      //     opacity: 1,
-      //     duration: 1.2,
-      //     stagger: 0.15,
-      //     ease: "power3.out",
-      //     clearProps: "transform,opacity"
-      //   }
-      // );
-
       // 4. Contact Section Reveal
       gsap.fromTo("#contact-content",
         { y: 40, opacity: 0 },
@@ -138,9 +104,11 @@ export default function App() {
 
       {/* Navigation */}
       <nav ref={navRef} className="fixed top-0 w-full px-6 md:px-16 py-6 flex justify-between items-center z-50 backdrop-blur-2xl bg-onyx/80 border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)] opacity-0">
-        <div className="font-extrabold text-lg tracking-[2px] text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+        <div className="font-extrabold text-lg tracking-[2px] text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] z-50 relative">
           ONYX <span className="text-gold-accent drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">&</span> CODE
         </div>
+
+        {/* Desktop Menu */}
         <ul className="hidden md:flex gap-10 absolute left-1/2 -translate-x-1/2">
           {['PROCESS', 'PORTFOLIO', 'CONTACT'].map((item) => (
             <li key={item}>
@@ -150,19 +118,46 @@ export default function App() {
             </li>
           ))}
         </ul>
-        <a href="#contact" className="group relative p-[1px] rounded-lg overflow-hidden cursor-pointer inline-block shadow-[0_0_15px_rgba(212,175,55,0.1)] hover:shadow-[0_0_25px_rgba(212,175,55,0.3)] transition-shadow duration-500">
-          <div className="absolute inset-[-100%] w-[300%] h-[300%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_0deg,transparent,var(--color-gold-accent),transparent_50%)] group-hover:bg-[conic-gradient(from_0deg,transparent,#fff,transparent_50%)]"></div>
-          <div className="relative z-10 bg-onyx-light px-6 py-2.5 rounded-[7px] text-xs font-bold uppercase tracking-wider text-white group-hover:bg-black transition-colors border border-white/5">
-            Start Project
-          </div>
-        </a>
+
+        <div className="flex items-center gap-6">
+          <a href="#contact" className="hidden md:inline-block group relative p-[1px] rounded-lg overflow-hidden cursor-pointer shadow-[0_0_15px_rgba(212,175,55,0.1)] hover:shadow-[0_0_25px_rgba(212,175,55,0.3)] transition-shadow duration-500">
+            <div className="absolute inset-[-100%] w-[300%] h-[300%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_0deg,transparent,var(--color-gold-accent),transparent_50%)] group-hover:bg-[conic-gradient(from_0deg,transparent,#fff,transparent_50%)]"></div>
+            <div className="relative z-10 bg-onyx-light px-6 py-2.5 rounded-[7px] text-xs font-bold uppercase tracking-wider text-white group-hover:bg-black transition-colors border border-white/5">
+              Start Project
+            </div>
+          </a>
+
+          {/* Mobile Burger Button */}
+          <button
+            className="md:hidden text-white z-50 relative w-8 h-8 flex flex-col justify-center gap-1.5"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <span className={`block w-full h-0.5 bg-gold-accent transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+            <span className={`block w-full h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+            <span className={`block w-full h-0.5 bg-gold-accent transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          </button>
+        </div>
+
+        {/* Mobile Menu Overlay */}
+        <div className={`fixed inset-0 bg-onyx/95 backdrop-blur-xl z-40 transition-all duration-500 flex flex-col justify-center items-center gap-8 ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
+          {['PROCESS', 'PORTFOLIO', 'CONTACT'].map((item) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              className="text-2xl font-bold tracking-[4px] text-white hover:text-gold-accent transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {item}
+            </a>
+          ))}
+        </div>
       </nav>
 
       <div className="container mx-auto px-6 md:px-12 max-w-7xl relative">
         {/* Hero Section */}
         <section className="pt-48 pb-20 relative" ref={heroRef}>
-          {/* Agent NEO: 3D Layer */}
-          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-full h-[800px] md:w-1/2 md:h-full z-[-1] md:z-10 translate-x-1/4 md:translate-x-0 pointer-events-none">
+          {/* Agent NEO: 3D Layer - Fixed for Mobile (Centered, no offset) */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[60vh] md:right-0 md:left-auto md:translate-x-0 md:w-1/2 md:h-full z-[-1] md:z-10 pointer-events-none opacity-60 md:opacity-100">
             <Scene3D />
           </div>
 
