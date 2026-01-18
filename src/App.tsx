@@ -146,25 +146,27 @@ export default function App() {
           </button>
         </div>
 
-        {/* Mobile Menu Overlay */}
-        <div className={`fixed inset-0 bg-onyx/60 backdrop-blur-3xl z-[90] transition-all duration-500 flex flex-col justify-center items-center gap-8 ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
-          {/* Menu Branding */}
-          <div className="font-extrabold text-2xl tracking-[4px] text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] mb-8">
-            ONYX <span className="text-gold-accent drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">&</span> CODE
-          </div>
 
-          {['ABOUT', 'PROCESS', 'PORTFOLIO', 'CONTACT'].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              className="text-4xl font-extrabold tracking-[2px] text-white/70 hover:text-white transition-all duration-300 hover:scale-105"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {item}
-            </a>
-          ))}
-        </div>
       </nav>
+
+      {/* Mobile Menu Overlay (Moved Outside Nav) */}
+      <div className={`fixed inset-0 bg-onyx/90 backdrop-blur-3xl z-[40] transition-all duration-500 flex flex-col justify-center items-center gap-10 ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
+        {/* Menu Branding - Optional since Nav is visible, but good for focus */}
+        <div className="font-extrabold text-2xl tracking-[4px] text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] mb-8">
+          ONYX <span className="text-gold-accent drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">&</span> CODE
+        </div>
+
+        {['ABOUT', 'PROCESS', 'PORTFOLIO', 'CONTACT'].map((item) => (
+          <a
+            key={item}
+            href={`#${item.toLowerCase()}`}
+            className="text-4xl font-extrabold tracking-[2px] text-white/70 hover:text-white transition-all duration-300 hover:scale-105"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {item}
+          </a>
+        ))}
+      </div>
 
       {/* GLOBAL 3D LAYER - Preserved across scroll and menu states */}
       <div className="fixed inset-0 z-0 pointer-events-none">
